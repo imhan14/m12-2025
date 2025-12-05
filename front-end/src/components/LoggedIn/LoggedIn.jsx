@@ -5,7 +5,7 @@ const LoggedIn = () => {
   return (
     <div>
         <h1>Logged In</h1>
-        <div>
+        <div className='flex flex-col'>
             <NavLink to="job1">Job option 1</NavLink>
             <NavLink to="#">Job option 2</NavLink>
             <NavLink to="#">Job option 3</NavLink>
