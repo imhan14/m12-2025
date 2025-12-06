@@ -8,9 +8,7 @@ export default defineConfig({
   plugins: [react(),tailwindcss(),],
   resolve: {
     alias: {
-      // Định nghĩa '@' tương đương với thư mục './src'
       '@': path.resolve(__dirname, './src'), 
-      // Hoặc định nghĩa cụ thể hơn
       '@components': path.resolve(__dirname, './src/components'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },

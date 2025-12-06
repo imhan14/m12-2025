@@ -6,7 +6,7 @@ import LoggedIn from "../components/LoggedIn/LoggedIn";
 import Job1 from "../components/Jobs/Job1/Job1";
 import Job2 from "../components/Jobs/Job2/Job2";
 import Job3 from "../components/Jobs/Job3/Job3";
-import Nhap from "../components/Input/Nhap";
+
 
 
 const router = createBrowserRouter([
@@ -29,7 +29,6 @@ const router = createBrowserRouter([
     //   {path:"inp", Component:Nhap}
     // ]
   },
-  {path:"loggedin/job1/inp", Component:Nhap}
 ]);
 
 export default router
