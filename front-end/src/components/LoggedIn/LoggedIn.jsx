@@ -4,7 +4,7 @@ import { NavLink, Outlet } from 'react-router'
 const LoggedIn = () => {
   
   return (
-    <div className='m-5'>
+    <div className='p-5 bg-gray-100 w-full h-screen'>
         <h1 className='text-2xl'>Logged In</h1>
         <div className='flex flex-col mt-5 gap-2'>
             <NavLink to="job1" className='border max-w-max p-1'>Job option 1</NavLink>
