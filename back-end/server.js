@@ -18,6 +18,35 @@ const pool = new Pool({
     port: process.env.POSTGRES_PORT,
 });
 
+/**
+ * 
+ * @param {Array<number>} allowedRoles 
+ */
+const authorize = (allowedRoles) => (req, res, next) => {
+ 
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ success: false, message: 'Yêu cầu token xác thực.' });
+    }
+    const token = authHeader.split(' ')[1];
+
+    try {
+
+        const decoded = jwt.verify(token, JWT_SECRET);
+
+        req.user = decoded; 
+
+        if (!allowedRoles.includes(req.user.role_id)) {
+            console.log(`>>> LOG: User ID ${req.user.user_id} bị từ chối truy cập (Role ${req.user.role_id}).`);
+            return res.status(403).json({ success: false, message: 'Bạn không có quyền truy cập chức năng này.' });
+        }
+
+        next(); 
+    } catch (err) {
+        console.error("Lỗi xác thực Token:", err.message);
+        return res.status(401).json({ success: false, message: 'Token không hợp lệ hoặc đã hết hạn.' });
+    }
+};
 pool.connect((err, client, release) => {
   if (err) {
     console.error('LỖI KHỞI ĐỘNG: Không thể kết nối DB:', err.stack);
@@ -83,7 +112,32 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
+app.get('/api/tasks', authorize([0, 1, 2, 3]), async (req, res) => {
+    const { role_id, user_id } = req.user;
+    let queryText = 'SELECT * FROM tasks ';
+    const params = [];
+    console.log(role_id)
+    if (role_id === 2) { // Manager (Level 2)
+        queryText += 'WHERE created_by = $1 ';
+        params.push(user_id);
+        console.log(`>>> LOG: Manager (ID ${user_id}) truy vấn tasks họ tạo.`);
+    } else if (role_id === 3) { // Employee (Level 3)
+        queryText += 'WHERE assigned_to = $1 ';
+        params.push(user_id);
+        console.log(`>>> LOG: Employee (ID ${user_id}) truy vấn tasks được giao.`);
+    } 
 
+
+    queryText += 'ORDER BY created_at DESC';
+
+    try {
+        const result = await pool.query(queryText, params);
+        res.status(200).json({ success: true, data: result.rows });
+    } catch (err) {
+        console.error("Lỗi khi lấy Tasks:", err.message);
+        res.status(500).send('Lỗi Server');
+    }
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

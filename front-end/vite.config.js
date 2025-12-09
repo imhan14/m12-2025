@@ -10,7 +10,18 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'), 
       '@components': path.resolve(__dirname, './src/components'),
+      '@features': path.resolve(__dirname, './src/features'),
       '@assets': path.resolve(__dirname, './src/assets'),
+      '@ui':path.resolve(__dirname, './src/components/ui'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000', 
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })
